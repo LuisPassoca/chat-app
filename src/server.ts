@@ -2,11 +2,13 @@ import express from 'express'
 import { createServer } from 'http'
 
 import logger from './middleware/logger.js'
+import { wssInit } from './websocket/init.js'
 
 const app = express()
 const port = 3000
 
 const server = createServer(app)
+wssInit(server)
 
 //Middleware
 app.use(logger)
