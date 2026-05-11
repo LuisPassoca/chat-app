@@ -15,7 +15,10 @@ app.use(logger)
 app.use(express.json())
 
 //Routes
-app.use('/', (req, res) => { res.send('Hello world!') })
+app.get('/hello', (req, res) => { res.send('Hello world!') })
+
+//Expose public assets
+app.use(express.static('public'))
 
 server.listen(port, () => { 
     console.log(`Server running on port ${port}\n`)
