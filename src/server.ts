@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import './db/connection.js'
 
 import express from 'express'

@@ -9,6 +9,9 @@ export interface User {
     name: string,
     email: string,
     password: string,
+    role: string
 }
 
-export type CreateUser = Omit<User, 'id'>
+export type CreateUser = Omit<User, 'id' | 'role'>
+
+export type LoginUser = Omit<User, 'id' | 'name' | 'role'>
