@@ -4,6 +4,8 @@ import { createServer } from 'http'
 import logger from './middleware/logger.js'
 import { wssInit } from './websocket/init.js'
 
+import apiRouter from './routes/apiRouter.js'
+
 const app = express()
 const port = 3000
 
@@ -15,6 +17,7 @@ app.use(logger)
 app.use(express.json())
 
 //Routes
+app.use('/api', apiRouter)
 app.get('/hello', (req, res) => { res.send('Hello world!') })
 
 //Expose public assets
