@@ -1,3 +1,5 @@
+import './db/connection.js'
+
 import express from 'express'
 import { createServer } from 'http'
 

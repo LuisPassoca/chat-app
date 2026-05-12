@@ -1,7 +1,7 @@
 export interface WebSocketMessage {
     type: string,
-    content?: unknown,
-    sender?: string
+    content?: string | undefined,
+    sender?: string | undefined
 }
 
 export interface User {
