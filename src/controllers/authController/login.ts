@@ -27,7 +27,11 @@ export async function login(req: Request, res: Response) {
             })
         }
 
-        const loginUser: LoginUser = result.data
+        const loginUser: LoginUser = {
+            ...result.data,
+            email: result.data.email.toLowerCase()
+        }
+
         const dbUser = getUserByEmail(loginUser.email)
 
         const success = dbUser && await bcrypt.compare(loginUser.password, dbUser.password)

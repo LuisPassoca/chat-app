@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/global.css">
+    <link rel="stylesheet" href="./css/auth.css">
+    <script src="./js/register.js" defer></script>
+    <title>Register</title>
+</head>
+<body>
+    <form class="register-form">
+        <h1> Welcome! </h1>
+        <p> Let's get you set up: </p>
+        <p class="error-message"></p>
+
+        <input name="name" type="text" placeholder="Username" minlength="3" required />
+        <input name="email" type="email" placeholder="E-mail" required />
+        <input name="password" type="password" placeholder="Password" minlength="8" required />
+        <input name="confirm" type="password" placeholder="Confirm password" required />
+
+        <button> Register </button>
+        <p> Already have an account? <a href="/login">Log In</a></p>
+    </form>
+</body>
+</html>
