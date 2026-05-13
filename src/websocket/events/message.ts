@@ -10,7 +10,6 @@ import { jsonParser } from "../../utils/jsonParser.js";
 const messageSchema = z.object({
     type: z.string(),
     content: z.string().optional(),
-    sender: z.string().optional()
 })
 
 export function onMessage(ws: WebSocket, data: RawData) {
@@ -25,7 +24,15 @@ export function onMessage(ws: WebSocket, data: RawData) {
         }))
     }
 
-    const message: WebSocketMessage = result.data
+    //at this point ws.user was already type checked by the connection event handler
+    const message: WebSocketMessage = {
+        ...result.data,
+        sender: {
+            id: ws.user!.id,
+            name: ws.user!.name,
+            role: ws.user!.role
+        }
+    }
 
     if (message.type === 'send-message') {
         console.log(message)

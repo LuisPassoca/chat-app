@@ -1,9 +1,10 @@
 import express, { type Request, type Response } from 'express'
+import authorization from '../middleware/authorization.js'
 const router = express.Router()
 
 const root = './public'
 
-router.get('/', (req: Request, res: Response) => {
+router.get('/', authorization, (req: Request, res: Response) => {
     res.sendFile('index.html', {root})
 })
 

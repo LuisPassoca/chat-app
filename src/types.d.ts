@@ -1,7 +1,25 @@
+declare global {
+    namespace Express {
+        interface Request {
+            user?: User
+        }
+    }
+}
+
+export module 'ws' {
+    interface WebSocket {
+        user?: User
+    }
+}
+
 export interface WebSocketMessage {
     type: string,
     content?: string | undefined,
-    sender?: string | undefined
+    sender?: { 
+        id: number,
+        name: string,
+        role: string
+    }
 }
 
 export interface User {

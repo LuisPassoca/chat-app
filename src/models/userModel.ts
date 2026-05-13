@@ -12,3 +12,9 @@ export function getUserByEmail(email: string) {
         .bind(email)
         .get() as User | undefined
 }
+
+export function getUserById(id: number) {
+    return db.prepare('SELECT * FROM users WHERE id = ?')
+        .bind(id)
+        .get() as User | undefined
+}

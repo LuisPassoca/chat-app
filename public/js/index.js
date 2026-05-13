@@ -5,8 +5,13 @@ ws.onmessage = recieveMessage
 ws.onclose = () => { console.log('Connection closed!') }
 ws.onerror = () => { console.log('Connection error!') }
 
-//Temporary user UUID
-const sender = crypto.randomUUID()
+//Fetching user data
+let user 
+
+(async function(){
+    const res = await fetch('/api/users/me')
+    user = await res.json()
+})()
 
 //Handling messages
 const chatMessages = document.querySelector('.chat-messages')
@@ -15,7 +20,6 @@ const chatMessages = document.querySelector('.chat-messages')
 function sendMessage(content) {
     const message = {
         type: 'send-message',
-        sender,
         content
     }
 
@@ -24,14 +28,14 @@ function sendMessage(content) {
 
 //Recieving message
 function recieveMessage(message) {
-    //Data structure { type: string, content: string, sender: string }
+    //Data structure { type: string, content: string, sender: { id: number, name: string, role: string } }
     const data = JSON.parse(message.data)
 
     if (data.type === 'send-message') {
         const lastMessage = chatMessages.firstElementChild
-        const lastAuthor = lastMessage?.querySelector('.author')?.innerText
+        const lastAuthorId = lastMessage?.dataset.id
 
-        if (lastAuthor === data.sender) {
+        if (lastAuthorId && lastAuthorId == data.sender.id) {
             const p = document.createElement('p')
             p.classList.add('message-text')
             p.innerText = data.content
@@ -42,11 +46,12 @@ function recieveMessage(message) {
 
         const msgDiv = document.createElement('div')
         msgDiv.classList.add('message')
-        msgDiv.classList.toggle('sent', data.sender === sender)
+        msgDiv.classList.toggle('sent', data.sender.id == user.id)
+        msgDiv.dataset.id = data.sender.id
 
         const msgAuthor = document.createElement('b')
         msgAuthor.classList.add('author')
-        msgAuthor.innerText = data.sender
+        msgAuthor.innerText = data.sender.name
 
         const msgText = document.createElement('p')
         msgText.classList.add('message-text')
