@@ -19,7 +19,8 @@ export interface WebSocketMessage {
         id: number,
         name: string,
         role: string
-    }
+    },
+    sentAt: string
 }
 
 export interface User {
@@ -31,5 +32,13 @@ export interface User {
 }
 
 export type CreateUser = Omit<User, 'id' | 'role'>
-
 export type LoginUser = Omit<User, 'id' | 'name' | 'role'>
+
+export interface DatabaseMessage {
+    id: number,
+    content: string,
+    sentAt: string,
+    senderId: number,
+    senderName: string,
+    senderRole: string
+}

@@ -9,8 +9,8 @@ import { generateToken } from '../../services/jwt.js';
 import { env } from 'node:process';
 
 const loginUserSchema = z.object({
-    email: z.email(),
-    password: z.string()
+    email: z.email('Invalid e-mail address!'),
+    password: z.string('Invalid password!')
 })
 
 export async function login(req: Request, res: Response) {
@@ -18,12 +18,10 @@ export async function login(req: Request, res: Response) {
         const result = loginUserSchema.safeParse(req.body)
 
         if (!result.success) { 
-            const errors = flattenError(result.error).fieldErrors
-        
             return res.status(400).json({ 
                 success: false,
-                message: 'Bad request!',
-                errors
+                message: 'Validation failed!',
+                errors: flattenError(result.error).fieldErrors
             })
         }
 
@@ -36,7 +34,7 @@ export async function login(req: Request, res: Response) {
 
         const success = dbUser && await bcrypt.compare(loginUser.password, dbUser.password)
 
-        if (!success) {return res.status(400).json({ 
+        if (!success) {return res.status(401).json({ 
             success: false,
             message: 'Invalid email or password!',
         })}

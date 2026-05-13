@@ -16,7 +16,7 @@ form.addEventListener('submit', async (e) => {
         return
     }
 
-    const res = await fetch(`${window.location.origin}/api/auth/register`, {
+    const res = await fetch(`/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password })
@@ -25,15 +25,17 @@ form.addEventListener('submit', async (e) => {
     const data = await res.json()
 
     if (!res.ok) {
-        err.textContent = data.message
+        //Display one error message at a time
+        if (data.errors) { err.textContent = Object.values(data.errors)[0][0] }
+        else { err.textContent = data.message }
         return
     }
 
     await login(email, password)
-})
+}) 
 
 async function login(email, password) {
-    const res = await fetch(`${window.location.origin}/api/auth/login`, {
+    const res = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })

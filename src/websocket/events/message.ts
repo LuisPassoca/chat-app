@@ -4,8 +4,8 @@ import type { WebSocket } from "ws";
 import type { RawData } from "ws";
 import type { WebSocketMessage } from '../../types.js';
 
-import { broadcast } from "../services/broadcast.js";
 import { jsonParser } from "../../utils/jsonParser.js";
+import { sendMessage } from '../services/sendMessage.js';
 
 const messageSchema = z.object({
     type: z.string(),
@@ -31,11 +31,9 @@ export function onMessage(ws: WebSocket, data: RawData) {
             id: ws.user!.id,
             name: ws.user!.name,
             role: ws.user!.role
-        }
+        },
+        sentAt: new Date().toISOString()
     }
 
-    if (message.type === 'send-message') {
-        console.log(message)
-        broadcast(message)
-    }
+    if (message.type === 'send-message') { sendMessage(ws, message) }
 }

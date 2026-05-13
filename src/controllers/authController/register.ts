@@ -7,9 +7,9 @@ import bcrypt from 'bcrypt'
 import { storeUser } from "../../models/userModel.js";
 
 const createUserSchema = z.object({
-    name: z.string().min(3,),
-    email: z.email(),
-    password: z.string().min(8)
+    name: z.string('Invalid name!').min(3, 'Name must be at least 3 characters long!'),
+    email: z.email('Invalid e-mail address!'),
+    password: z.string('Invalid password!').min(8, 'password must be at least 8 characters long!')
 })
 
 export async function register(req: Request, res: Response) {
@@ -17,12 +17,10 @@ export async function register(req: Request, res: Response) {
         const result = createUserSchema.safeParse(req.body)
 
         if (!result.success) { 
-            const errors = flattenError(result.error).fieldErrors
-        
             return res.status(400).json({ 
                 success: false,
-                message: 'Bad request!',
-                errors
+                message: 'Validation failed!',
+                errors: flattenError(result.error).fieldErrors
             })
         }
 

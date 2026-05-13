@@ -9,7 +9,7 @@ form.addEventListener('submit', async (e) => {
     const email = formData.get('email')
     const password = formData.get('password')
 
-    const res = await fetch(`${window.location.origin}/api/auth/login`, {
+    const res = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -18,7 +18,9 @@ form.addEventListener('submit', async (e) => {
     const data = await res.json()
 
     if (!res.ok) {
-        err.textContent = 'Invalid email or password!'
+        //Display one error message at a time
+        if (data.errors) { err.textContent = Object.values(data.errors)[0][0] }
+        else { err.textContent = data.message }
         return
     }
 

@@ -1,9 +1,11 @@
 import express from 'express'
 import authRouter from './apiRoutes/authRouter.js'
+import messageRouter from './apiRoutes/messageRouter.js'
 import authorization from '../middleware/authorization.js'
 const router = express.Router()
 
 router.use('/auth', authRouter)
+router.use('/messages', messageRouter)
 
 //Temporary endpoint for frontend testing
 router.get('/users/me', authorization, (req, res) => {

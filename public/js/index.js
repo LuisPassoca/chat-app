@@ -1,16 +1,34 @@
-const ws = new WebSocket(`ws://${window.location.host}`)
+const protocol = location.protocol == 'https:' ? 'wss:' : 'ws:'
+const ws = new WebSocket(`${protocol}//${window.location.host}`)
 
 ws.onopen = () => { console.log('Connection open!') }
 ws.onmessage = recieveMessage
 ws.onclose = () => { console.log('Connection closed!') }
 ws.onerror = () => { console.log('Connection error!') }
 
-//Fetching user data
+//Initial fetch for user data and database messages
 let user 
 
 (async function(){
-    const res = await fetch('/api/users/me')
-    user = await res.json()
+    const fetchUser = async () => {
+        const res = await fetch('/api/users/me')
+        if (!res.ok) { window.location.href = '/login' }
+
+        return await res.json()
+    }
+
+    const fetchMessages = async () => {
+        const res = await fetch('/api/messages')
+
+        if (!res.ok) { window.alert('Unable to retrieve older messages!')}
+
+        const json = await res.json()
+        return json.data
+    }
+    
+    user = await fetchUser()
+    const messages = await fetchMessages()
+    for (const m of messages) { insertMessage(m) }
 })()
 
 //Handling messages
@@ -28,40 +46,11 @@ function sendMessage(content) {
 
 //Recieving message
 function recieveMessage(message) {
-    //Data structure { type: string, content: string, sender: { id: number, name: string, role: string } }
+    //Data structure { type: string, content: string, sentAt: string, sender: { id: number, name: string, role: string } }
     const data = JSON.parse(message.data)
 
-    if (data.type === 'send-message') {
-        const lastMessage = chatMessages.firstElementChild
-        const lastAuthorId = lastMessage?.dataset.id
-
-        if (lastAuthorId && lastAuthorId == data.sender.id) {
-            const p = document.createElement('p')
-            p.classList.add('message-text')
-            p.innerText = data.content
-
-            lastMessage.appendChild(p)
-            return
-        }
-
-        const msgDiv = document.createElement('div')
-        msgDiv.classList.add('message')
-        msgDiv.classList.toggle('sent', data.sender.id == user.id)
-        msgDiv.dataset.id = data.sender.id
-
-        const msgAuthor = document.createElement('b')
-        msgAuthor.classList.add('author')
-        msgAuthor.innerText = data.sender.name
-
-        const msgText = document.createElement('p')
-        msgText.classList.add('message-text')
-        msgText.innerText = data.content
-
-        msgDiv.appendChild(msgAuthor)
-        msgDiv.appendChild(msgText)
-
-        chatMessages.prepend(msgDiv)
-    }
+    if (data.type === 'send-message') { insertMessage(data) }
+    if (data.type === 'error') { window.alert(data.content) }
 }
 
 //Handle sending message
@@ -86,6 +75,40 @@ messageInput.addEventListener('keydown', (e) => {
     }
 })
 
-sendButton.addEventListener('click', () => {
+sendButton.addEventListener('click', (e) => {
     messageInput.focus()
 })
+
+//Insert message function
+function insertMessage(message) {
+    const lastMessage = chatMessages.firstElementChild
+    const lastAuthorId = lastMessage?.dataset.authorId
+
+    if (lastAuthorId && lastAuthorId == message.sender.id) {
+        const p = document.createElement('p')
+        p.dataset.messageId = message.id
+        p.classList.add('message-text')
+        p.innerText = message.content
+
+        lastMessage.appendChild(p)
+        return
+    }
+
+    const msgDiv = document.createElement('div')
+    msgDiv.classList.add('message')
+    msgDiv.classList.toggle('sent', message.sender.id == user.id)
+    msgDiv.dataset.authorId = message.sender.id
+
+    const msgAuthor = document.createElement('b')
+    msgAuthor.classList.add('author')
+    msgAuthor.innerText = message.sender.name
+
+    const msgText = document.createElement('p')
+    msgText.classList.add('message-text')
+    msgText.innerText = message.content
+
+    msgDiv.appendChild(msgAuthor)
+    msgDiv.appendChild(msgText)
+
+    chatMessages.prepend(msgDiv)
+}
